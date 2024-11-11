@@ -1,5 +1,4 @@
-package mods.tesseract.worleycaves.config;
-
+package mods.tesseract.ucm.config;
 
 public class Configs
 {

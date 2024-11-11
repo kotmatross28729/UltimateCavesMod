@@ -1,16 +1,22 @@
 [
-{
-  "modid": "worleycaves",
-  "name": "Worley's Caves",
-  "description": "Cave generation with Worley noise",
-  "version": "1.5.3",
-  "mcversion": "1.12.2",
+  {
+  "modid": "${modId}",
+  "name": "${modName}",
+  "description": "Adds new and interesting worldgen",
+  "version": "${modVersion}",
+  "mcversion": "${minecraftVersion}",
   "url": "",
   "updateUrl": "",
-  "authorList": ["SuperFluke", "booleanbyte"],
+  "authorList": [
+  "SuperFluke",
+  "booleanbyte",
+  "SuperCoder79",
+  "unix-supremacist",
+  "Tesseract"
+  ],
   "credits": "",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []
-}
-]
+  }
+  ]

@@ -26,7 +26,7 @@
 // off every 'zix'.)
 //
 
-package mods.tesseract.worleycaves.util;
+package mods.tesseract.ucm.util;
 
 import javax.vecmath.Vector2f;
 import javax.vecmath.Vector3f;
