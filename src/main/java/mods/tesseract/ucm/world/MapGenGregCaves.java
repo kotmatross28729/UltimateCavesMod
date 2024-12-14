@@ -256,7 +256,7 @@ public class MapGenGregCaves extends MapGenCaves {
         Block block = data[index];
 
         if (block == Blocks.stone || block == filler || block == top) {
-            if (y < Main.caveLavaLevel) {
+            if (y < Main.caveLavaLevel - 1) {
                 data[index] = Blocks.flowing_lava;
             } else {
                 data[index] = null;

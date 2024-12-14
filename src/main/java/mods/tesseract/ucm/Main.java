@@ -54,7 +54,7 @@ public class Main
         reduceOreGen = cfg.getBoolean("reduceOreGen", "GregCaves", false, "Reduce ores in the deep.");
         reduceOreGenY = cfg.getInt("reduceOreGenY", "GregCaves", 33, 0, 256, "Reduce ores start height.");
         reduceOreGenRate = cfg.getFloat("reduceOreGenRate", "GregCaves", 0.6F, 0, 1, "1 = all, 0 = does nothing");
-        caveLavaLevel = cfg.getInt("caveLavaLevel", "GregCaves", 2, 0, 256, "For greg caves requires smoothBedrock on to work.");
+        caveLavaLevel = cfg.getInt("caveLavaLevel", "GregCaves", 2, 0, 256, "For greg caves requires smoothBedrock true to work. In combined mode you will also need to change \"lavaDepth\" from WorleyCaves");
         //disableUndergroundLiquid = cfg.getBoolean("disableUndergroundLiquid", "GregCaves", true, "Disable water and lava source generations in underground.");
 
         //WORLEY CAVES

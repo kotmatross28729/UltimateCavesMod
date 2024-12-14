@@ -282,7 +282,7 @@ public class CompositeCaveGenerator extends MapGenCaves {
         Block block = data[index];
 
         if (block == Blocks.stone || block == filler || block == top) {
-            if (y < Main.caveLavaLevel) {
+            if (y < Main.caveLavaLevel - 1) {
                 data[index] = Blocks.flowing_lava;
             } else {
                 data[index] = null;
@@ -669,6 +669,8 @@ public class CompositeCaveGenerator extends MapGenCaves {
                 //replace floating sand with sandstone
                 if (up == Blocks.sand) {
                     data.setBlockState(x, y + 1, z, Blocks.sandstone);
+                } else if (up == Blocks.gravel) {
+                    data.setBlockState(x, y + 1, z, filler);
                 }
 
             }

@@ -429,6 +429,8 @@ public class WorleyCaveGenerator extends MapGenCaves {
                 //replace floating sand with sandstone
                 if (up == Blocks.sand) {
                     data.setBlockState(x, y + 1, z, Blocks.sandstone);
+                } else if (up == Blocks.gravel) {
+                    data.setBlockState(x, y + 1, z, filler);
                 }
 
             }
