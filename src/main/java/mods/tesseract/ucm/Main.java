@@ -11,7 +11,7 @@ import net.minecraftforge.common.config.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = "ultimatecavesmod", name = "Ultimate Caves Mod", version = "1.0.1", acceptableRemoteVersions = "*")
+@Mod(modid = "ultimatecavesmod", name = "Ultimate Caves Mod", version = "1.0.3", acceptableRemoteVersions = "*")
 public class Main
 {
     public static final Logger LOGGER = LogManager.getLogger("ultimatecavesmod");
@@ -31,7 +31,6 @@ public class Main
     public static int easeInDepth = 15;
     public static float verticalCompressionMultiplier = 2.0f;
     public static float horizonalCompressionMultiplier = 1.0f;
-    public static int[] blackListedDims = {-1};
     public static int maxCaveHeight = 128;
     public static int minCaveHeight = 1;
     public static String lavaBlock = "minecraft:lava";
@@ -40,15 +39,19 @@ public class Main
 
     public static boolean enableWorleyCaves;
     public static boolean enableGregCaves;
+    public static int[] blackListedDims = {-1};
+    public static boolean revertBlacklist;
 
 	@EventHandler
-	public static void preInit(FMLPreInitializationEvent e)
-	{
+	public static void preInit(FMLPreInitializationEvent e) {
         Configuration cfg = new Configuration(e.getSuggestedConfigurationFile());
 
         enableGregCaves = cfg.getBoolean("enableGregCaves", "Functions", true, "Enable GregCaves generation.");
         enableWorleyCaves = cfg.getBoolean("enableWorleyCaves", "Functions", true, "Enable WorleyCaves generation.");
-
+        
+        blackListedDims = cfg.get("Functions", "blackListedDims", blackListedDims, "Dimension IDs that will use Vanilla cave generation.").getIntList();
+        revertBlacklist = cfg.getBoolean("revertBlacklist", "Functions", false, "Flips blacklist so it becomes whitelist.");
+        
         //GREG CAVES
         smoothBedrock = cfg.getBoolean("smoothBedrock", "GregCaves", false, "Only generates one layer of bedrock.");
         reduceOreGen = cfg.getBoolean("reduceOreGen", "GregCaves", false, "Reduce ores in the deep.");
@@ -64,7 +67,6 @@ public class Main
         easeInDepth = cfg.getInt("easeInDepth", "WorleyCaves", easeInDepth, 0, Integer.MAX_VALUE, "Reduces number of caves at surface level, becoming more common until caves generate normally X number of blocks below the surface");
         verticalCompressionMultiplier = cfg.getFloat("verticalCompressionMultiplier", "WorleyCaves", verticalCompressionMultiplier, 0, Float.MAX_VALUE, "Squishes caves on the Y axis. Lower values = taller caves and more steep drops");
         horizonalCompressionMultiplier = cfg.getFloat("horizonalCompressionMultiplier", "WorleyCaves", horizonalCompressionMultiplier, 0, Float.MAX_VALUE, "Streches (when < 1.0) or compresses (when > 1.0) cave generation along X and Z axis");
-        blackListedDims = cfg.get("WorleyCaves", "blackListedDims", blackListedDims, "Dimension IDs that will use Vanilla cave generation rather than Worley's Caves").getIntList();
         maxCaveHeight = cfg.getInt("maxCaveHeight", "WorleyCaves", maxCaveHeight, 1, 256, "Caves will not attempt to generate above this y level. Range 1-256");
         minCaveHeight = cfg.getInt("minCaveHeight", "WorleyCaves", minCaveHeight, 1, 256, "Caves will not attempt to generate below this y level. Range 1-256");
         lavaBlock = cfg.getString("lavaBlock", "WorleyCaves", lavaBlock, "Block to use when generating large lava lakes below lavaDepth (usually y=10)");
@@ -77,12 +79,7 @@ public class Main
             MinecraftForge.TERRAIN_GEN_BUS.register(new CaveEventGreg());
         else if(enableWorleyCaves)
             MinecraftForge.TERRAIN_GEN_BUS.register(new CaveEventWorley());
-
-//         if(enableGregCaves)
-//            MinecraftForge.TERRAIN_GEN_BUS.register(new CaveEventGreg());
-//         if(enableWorleyCaves)
-//            MinecraftForge.TERRAIN_GEN_BUS.register(new CaveEventWorley());
-
+        
         if (cfg.hasChanged())
             cfg.save();
     }

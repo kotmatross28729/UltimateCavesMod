@@ -1,6 +1,8 @@
 package mods.tesseract.ucm.world;
 
 import mods.tesseract.ucm.Main;
+import mods.tesseract.ucm.Utils;
+import mods.tesseract.ucm.util.FastNoise;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFalling;
 import net.minecraft.init.Blocks;
@@ -8,8 +10,11 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.gen.MapGenBase;
 import net.minecraft.world.gen.MapGenCaves;
 import net.minecraft.world.gen.NoiseGeneratorOctaves;
+import net.minecraftforge.event.terraingen.InitMapGenEvent;
+import net.minecraftforge.event.terraingen.TerrainGen;
 
 public class MapGenGregCaves extends MapGenCaves {
     private double[] caveNoise;
@@ -23,26 +28,49 @@ public class MapGenGregCaves extends MapGenCaves {
     private double[] lowerInterpolatedNoises;
     private double[] upperInterpolatedNoises;
     private double[] depthNoises;
-
+    
+    private MapGenBase replacementCaves;
+    private MapGenBase moddedCaveGen;
+    public MapGenGregCaves() {
+        //try and grab other modded cave gens, like swiss cheese caves or Quark big caves
+        //our replace cavegen event will ignore cave events when the original cave class passed in is a Greg cave
+        moddedCaveGen = TerrainGen.getModdedMapGen(this, InitMapGenEvent.EventType.CAVE);
+        if (moddedCaveGen != this)
+            replacementCaves = moddedCaveGen;
+        else
+            replacementCaves = new MapGenCaves(); //default to vanilla caves if there are no other modded cave gens
+    }
     @Override
     public void func_151539_a(IChunkProvider c, World w, int chunkX, int chunkZ, Block[] blocks) {
-        if (worldObj != w) {
-            this.caveNoise = new double[825];
-            this.biomeWeightTable = new float[25];
-            this.field_147431_j = new NoiseGeneratorOctaves(this.rand, 16);
-            this.field_147432_k = new NoiseGeneratorOctaves(this.rand, 16);
-            this.interpolationNoise = new NoiseGeneratorOctaves(this.rand, 8);
-            this.noiseGen6 = new NoiseGeneratorOctaves(this.rand, 16);
-            this.noiseCaves = new NoiseCaveGenerator(this.rand);
-            for (int j = -2; j <= 2; ++j) {
-                for (int k = -2; k <= 2; ++k) {
-                    float f = 10.0F / MathHelper.sqrt_float((float) (j * j + k * k) + 0.2F);
-                    this.biomeWeightTable[j + 2 + (k + 2) * 5] = f;
-                }
-            }
+        int currentDim = w.provider.dimensionId;
+
+//        boolean useVanillaCaves = Main.revertBlacklist
+//                ? !isDimensionBlacklisted(currentDim)
+//                : isDimensionBlacklisted(currentDim);
+        boolean useVanillaCaves = Main.revertBlacklist != Utils.isDimensionBlacklisted(currentDim);
+    
+        //revert to vanilla cave generation for blacklisted dims
+        if (useVanillaCaves) {
+            this.replacementCaves.func_151539_a(c, w, chunkX, chunkZ, blocks);
+            return;
         }
+    
         this.worldObj = w;
         this.rand.setSeed(w.getSeed());
+        
+        this.caveNoise = new double[825];
+        this.biomeWeightTable = new float[25];
+        this.field_147431_j = new NoiseGeneratorOctaves(this.rand, 16);
+        this.field_147432_k = new NoiseGeneratorOctaves(this.rand, 16);
+        this.interpolationNoise = new NoiseGeneratorOctaves(this.rand, 8);
+        this.noiseGen6 = new NoiseGeneratorOctaves(this.rand, 16);
+        this.noiseCaves = new NoiseCaveGenerator(this.rand);
+        for (int j = -2; j <= 2; ++j) {
+            for (int k = -2; k <= 2; ++k) {
+                float f = 10.0F / MathHelper.sqrt_float((float) (j * j + k * k) + 0.2F);
+                this.biomeWeightTable[j + 2 + (k + 2) * 5] = f;
+            }
+        }
         int k = this.range;
         long l = this.rand.nextLong();
         long i1 = this.rand.nextLong();

@@ -3,6 +3,7 @@ package mods.tesseract.ucm.world;
 import mods.tesseract.mycelium.util.BlockPos;
 import mods.tesseract.mycelium.world.ChunkPrimer;
 import mods.tesseract.ucm.Main;
+import mods.tesseract.ucm.Utils;
 import mods.tesseract.ucm.util.FastNoise;
 import mods.tesseract.ucm.util.WorleyUtil;
 import net.minecraft.block.Block;
@@ -20,6 +21,7 @@ import net.minecraft.world.gen.NoiseGeneratorOctaves;
 import net.minecraftforge.event.terraingen.InitMapGenEvent;
 import net.minecraftforge.event.terraingen.TerrainGen;
 import net.minecraftforge.fluids.IFluidBlock;
+import org.apache.logging.log4j.LogManager;
 
 public class CompositeCaveGenerator extends MapGenCaves {
     private double[] caveNoise;
@@ -33,27 +35,39 @@ public class CompositeCaveGenerator extends MapGenCaves {
     private double[] lowerInterpolatedNoises;
     private double[] upperInterpolatedNoises;
     private double[] depthNoises;
-
+    
     @Override
     public void func_151539_a(IChunkProvider c, World w, int chunkX, int chunkZ, Block[] blocks) {
-        //GREGCAVES START
-        if (worldObj != w) {
-            this.caveNoise = new double[825];
-            this.biomeWeightTable = new float[25];
-            this.field_147431_j = new NoiseGeneratorOctaves(this.rand, 16);
-            this.field_147432_k = new NoiseGeneratorOctaves(this.rand, 16);
-            this.interpolationNoise = new NoiseGeneratorOctaves(this.rand, 8);
-            this.noiseGen6 = new NoiseGeneratorOctaves(this.rand, 16);
-            this.noiseCaves = new NoiseCaveGenerator(this.rand);
-            for (int j = -2; j <= 2; ++j) {
-                for (int k = -2; k <= 2; ++k) {
-                    float f = 10.0F / MathHelper.sqrt_float((float) (j * j + k * k) + 0.2F);
-                    this.biomeWeightTable[j + 2 + (k + 2) * 5] = f;
-                }
-            }
+        int currentDim = w.provider.dimensionId;
+    
+//        boolean useVanillaCaves = Main.revertBlacklist
+//                ? !isDimensionBlacklisted(currentDim)
+//                : isDimensionBlacklisted(currentDim);
+        boolean useVanillaCaves = Main.revertBlacklist != Utils.isDimensionBlacklisted(currentDim);
+
+        //revert to vanilla cave generation for blacklisted dims
+        if (useVanillaCaves) {
+            this.replacementCaves.func_151539_a(c, w, chunkX, chunkZ, blocks);
+            return;
         }
+        
         this.worldObj = w;
         this.rand.setSeed(w.getSeed());
+        
+        //GREGCAVES START
+         this.caveNoise = new double[825];
+         this.biomeWeightTable = new float[25];
+         this.field_147431_j = new NoiseGeneratorOctaves(this.rand, 16);
+         this.field_147432_k = new NoiseGeneratorOctaves(this.rand, 16);
+         this.interpolationNoise = new NoiseGeneratorOctaves(this.rand, 8);
+         this.noiseGen6 = new NoiseGeneratorOctaves(this.rand, 16);
+         this.noiseCaves = new NoiseCaveGenerator(this.rand);
+         for (int j = -2; j <= 2; ++j) {
+             for (int k = -2; k <= 2; ++k) {
+                 float f = 10.0F / MathHelper.sqrt_float((float) (j * j + k * k) + 0.2F);
+                 this.biomeWeightTable[j + 2 + (k + 2) * 5] = f;
+             }
+         }
         int k = this.range;
         long l = this.rand.nextLong();
         long i1 = this.rand.nextLong();
@@ -72,19 +86,6 @@ public class CompositeCaveGenerator extends MapGenCaves {
 
         //WORLEY CAVES START
         ChunkPrimer primer = new ChunkPrimer(blocks);
-        int currentDim = w.provider.dimensionId;
-        this.worldObj = w;
-        //revert to vanilla cave generation for blacklisted dims
-        for (int blacklistedDim : Main.blackListedDims) {
-            if (currentDim == blacklistedDim) {
-                this.replacementCaves.func_151539_a(c, w, chunkX, chunkZ, blocks);
-                return;
-            }
-        }
-
-        debugValueAdjustments();
-
-        this.worldObj = w;
         this.generateWorleyCaves(w, chunkX, chunkZ, primer);
         //WORLEY CAVES END
     }
@@ -315,7 +316,6 @@ public class CompositeCaveGenerator extends MapGenCaves {
     private static int HAS_CAVES_FLAG = 129;
 
     public CompositeCaveGenerator() {
-        //TODO noise should probably be seeded with world seed
         worleyF1divF3.SetFrequency(0.016f);
 
         displacementNoisePerlin.SetNoiseType(FastNoise.NoiseType.Perlin);
@@ -345,15 +345,6 @@ public class CompositeCaveGenerator extends MapGenCaves {
         else
             replacementCaves = new MapGenCaves(); //default to vanilla caves if there are no other modded cave gens
     }
-
-    private void debugValueAdjustments() {
-        //lavaDepth = 10;
-        //noiseCutoff = 0.18F;
-        //warpAmplifier = 8.0F;
-        //easeInDepth = 15;
-        //xzCompression = 0.5f;
-    }
-
     protected void generateWorleyCaves(World worldIn, int chunkX, int chunkZ, ChunkPrimer chunkPrimerIn) {
         int chunkMaxHeight = getMaxSurfaceHeight(chunkPrimerIn);
         int seaLevel = 63;
@@ -362,7 +353,7 @@ public class CompositeCaveGenerator extends MapGenCaves {
         float oneHalf = 0.5F;
         BiomeGenBase currentBiome;
         BlockPos realPos;
-        //float cutoffAdjuster = 0F; //TODO one day, perlin adjustments to cutoff
+        //float cutoffAdjuster = 0F;
 
         //each chunk divided into 4 subchunks along X axis
         for (int x = 0; x < 4; x++) {
@@ -661,30 +652,18 @@ public class CompositeCaveGenerator extends MapGenCaves {
                 data.setBlockState(x, y, z, lava);
             } else {
                 data.setBlockState(x, y, z, Blocks.air);
-
+    
                 if (foundTop && data.getBlockState(x, y - 1, z) == filler) {
                     data.setBlockState(x, y - 1, z, top);
                 }
-
+    
                 //replace floating sand with sandstone
                 if (up == Blocks.sand) {
                     data.setBlockState(x, y + 1, z, Blocks.sandstone);
                 } else if (up == Blocks.gravel) {
                     data.setBlockState(x, y + 1, z, filler);
                 }
-
             }
         }
     }
-
-
-
-
-
-
-
-
-
-
-
 }

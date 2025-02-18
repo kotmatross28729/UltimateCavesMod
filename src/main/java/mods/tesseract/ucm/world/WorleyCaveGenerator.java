@@ -3,6 +3,7 @@ package mods.tesseract.ucm.world;
 import mods.tesseract.mycelium.util.BlockPos;
 import mods.tesseract.mycelium.world.ChunkPrimer;
 import mods.tesseract.ucm.Main;
+import mods.tesseract.ucm.Utils;
 import mods.tesseract.ucm.util.FastNoise;
 import mods.tesseract.ucm.util.WorleyUtil;
 import net.minecraft.block.Block;
@@ -38,7 +39,6 @@ public class WorleyCaveGenerator extends MapGenCaves {
     private static float surfaceCutoff;
     private static int lavaDepth;
     private static int HAS_CAVES_FLAG = 129;
-
     public WorleyCaveGenerator() {
         //TODO noise should probably be seeded with world seed
         worleyF1divF3.SetFrequency(0.016f);
@@ -70,29 +70,24 @@ public class WorleyCaveGenerator extends MapGenCaves {
         else
             replacementCaves = new MapGenCaves(); //default to vanilla caves if there are no other modded cave gens
     }
-
-    private void debugValueAdjustments() {
-        //lavaDepth = 10;
-        //noiseCutoff = 0.18F;
-        //warpAmplifier = 8.0F;
-        //easeInDepth = 15;
-        //xzCompression = 0.5f;
-    }
-
+    
     @Override
     public void func_151539_a(IChunkProvider provider, World worldIn, int x, int z, Block[] blocks) {
-        ChunkPrimer primer = new ChunkPrimer(blocks);
         int currentDim = worldIn.provider.dimensionId;
-        this.worldObj = worldIn;
+        //        boolean useVanillaCaves = Main.revertBlacklist
+//                ? !isDimensionBlacklisted(currentDim)
+//                : isDimensionBlacklisted(currentDim);
+        boolean useVanillaCaves = Main.revertBlacklist != Utils.isDimensionBlacklisted(currentDim);
+    
         //revert to vanilla cave generation for blacklisted dims
-        for (int blacklistedDim : Main.blackListedDims) {
-            if (currentDim == blacklistedDim) {
-                this.replacementCaves.func_151539_a(provider, worldIn, x, z, blocks);
-                return;
-            }
+        if (useVanillaCaves) {
+            this.replacementCaves.func_151539_a(provider, worldIn, x, z, blocks);
+            return;
         }
-
-        debugValueAdjustments();
+        
+        this.worldObj = worldIn;
+        ChunkPrimer primer = new ChunkPrimer(blocks);
+        
         boolean logTime = false; //TODO turn off
         long start = 0;
         if (logTime) {
@@ -432,7 +427,6 @@ public class WorleyCaveGenerator extends MapGenCaves {
                 } else if (up == Blocks.gravel) {
                     data.setBlockState(x, y + 1, z, filler);
                 }
-
             }
         }
     }
