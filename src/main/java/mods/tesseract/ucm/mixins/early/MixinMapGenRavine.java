@@ -1,6 +1,6 @@
 package mods.tesseract.ucm.mixins.early;
 
-import mods.tesseract.ucm.Main;
+import mods.tesseract.ucm.config.GregCavesConfig;
 import net.minecraft.world.gen.MapGenRavine;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;
@@ -12,6 +12,6 @@ public class MixinMapGenRavine {
     @ModifyConstant(method = "digBlock([Lnet/minecraft/block/Block;IIIIIIZ)V", constant = @Constant(intValue = 10), remap = false)
     public int setCaveLavaLevel(int caveLavaLevel)
     {
-        return Main.caveLavaLevel;
+        return GregCavesConfig.caveLavaLevel;
     }
 }

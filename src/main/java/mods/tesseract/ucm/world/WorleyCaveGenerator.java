@@ -4,6 +4,8 @@ import mods.tesseract.mycelium.util.BlockPos;
 import mods.tesseract.mycelium.world.ChunkPrimer;
 import mods.tesseract.ucm.Main;
 import mods.tesseract.ucm.Utils;
+import mods.tesseract.ucm.config.MainConfig;
+import mods.tesseract.ucm.config.WorleyCavesConfig;
 import mods.tesseract.ucm.util.FastNoise;
 import mods.tesseract.ucm.util.WorleyUtil;
 import net.minecraft.block.Block;
@@ -46,19 +48,19 @@ public class WorleyCaveGenerator extends MapGenCaves {
         displacementNoisePerlin.SetNoiseType(FastNoise.NoiseType.Perlin);
         displacementNoisePerlin.SetFrequency(0.05f);
 
-        maxCaveHeight = Main.maxCaveHeight;
-        minCaveHeight = Main.minCaveHeight;
-        noiseCutoff =  Main.noiseCutoffValue;
-        warpAmplifier =  Main.warpAmplifier;
-        easeInDepth = Main.easeInDepth;
-        yCompression =  Main.verticalCompressionMultiplier;
-        xzCompression =  Main.horizonalCompressionMultiplier;
-        surfaceCutoff = Main.surfaceCutoffValue;
-        lavaDepth = Main.lavaDepth;
+        maxCaveHeight = WorleyCavesConfig.maxCaveHeight;
+        minCaveHeight = WorleyCavesConfig.minCaveHeight;
+        noiseCutoff =  WorleyCavesConfig.noiseCutoffValue;
+        warpAmplifier =  WorleyCavesConfig.warpAmplifier;
+        easeInDepth = WorleyCavesConfig.easeInDepth;
+        yCompression =  WorleyCavesConfig.verticalCompressionMultiplier;
+        xzCompression =  WorleyCavesConfig.horizonalCompressionMultiplier;
+        surfaceCutoff = WorleyCavesConfig.surfaceCutoffValue;
+        lavaDepth = WorleyCavesConfig.lavaDepth;
 
-        lava = (Block) Block.blockRegistry.getObject(Main.lavaBlock);
+        lava = (Block) Block.blockRegistry.getObject(WorleyCavesConfig.lavaBlock);
         if (lava == null) {
-            Main.LOGGER.error("Cannont find block " + Main.lavaBlock);
+            Main.LOGGER.error("Cannont find block " + WorleyCavesConfig.lavaBlock);
             lava = Blocks.air;
         }
 
@@ -77,7 +79,7 @@ public class WorleyCaveGenerator extends MapGenCaves {
         //        boolean useVanillaCaves = Main.revertBlacklist
 //                ? !isDimensionBlacklisted(currentDim)
 //                : isDimensionBlacklisted(currentDim);
-        boolean useVanillaCaves = Main.revertBlacklist != Utils.isDimensionBlacklisted(currentDim);
+        boolean useVanillaCaves = MainConfig.revertBlacklist != Utils.isDimensionBlacklisted(currentDim);
     
         //revert to vanilla cave generation for blacklisted dims
         if (useVanillaCaves) {
@@ -396,7 +398,7 @@ public class WorleyCaveGenerator extends MapGenCaves {
     protected boolean canReplaceBlock(Block block, Block blockUp) {
         if (block == Blocks.air || blockUp.getMaterial() == Material.water)
             return false;
-        return (Main.allowReplaceMoreBlocks && block.getMaterial() == Material.rock)
+        return (WorleyCavesConfig.allowReplaceMoreBlocks && block.getMaterial() == Material.rock)
             || block == Blocks.stone
             || block == Blocks.dirt
             || block == Blocks.grass

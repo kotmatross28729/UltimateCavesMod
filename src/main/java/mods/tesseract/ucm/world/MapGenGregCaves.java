@@ -1,8 +1,8 @@
 package mods.tesseract.ucm.world;
 
-import mods.tesseract.ucm.Main;
 import mods.tesseract.ucm.Utils;
-import mods.tesseract.ucm.util.FastNoise;
+import mods.tesseract.ucm.config.GregCavesConfig;
+import mods.tesseract.ucm.config.MainConfig;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFalling;
 import net.minecraft.init.Blocks;
@@ -47,7 +47,7 @@ public class MapGenGregCaves extends MapGenCaves {
 //        boolean useVanillaCaves = Main.revertBlacklist
 //                ? !isDimensionBlacklisted(currentDim)
 //                : isDimensionBlacklisted(currentDim);
-        boolean useVanillaCaves = Main.revertBlacklist != Utils.isDimensionBlacklisted(currentDim);
+        boolean useVanillaCaves = MainConfig.revertBlacklist != Utils.isDimensionBlacklisted(currentDim);
     
         //revert to vanilla cave generation for blacklisted dims
         if (useVanillaCaves) {
@@ -126,11 +126,11 @@ public class MapGenGregCaves extends MapGenCaves {
                             for (int pieceZ = 0; pieceZ < 4; ++pieceZ) {
                                 index += idAdd;
                                 if ((density += densityAdd) < 0) {
-                                    if (Main.smoothBedrock) {
+                                    if (GregCavesConfig.smoothBedrock) {
                                         if (blocks[index] == Blocks.stone) {
                                             int y = noiseY * 8 + pieceY;
                                             if (y > 5) {
-                                                if (y < Main.caveLavaLevel) {
+                                                if (y < GregCavesConfig.caveLavaLevel) {
                                                     blocks[index] = Blocks.flowing_lava;
                                                 } else {
                                                     blocks[index] = null;
@@ -284,7 +284,7 @@ public class MapGenGregCaves extends MapGenCaves {
         Block block = data[index];
 
         if (block == Blocks.stone || block == filler || block == top) {
-            if (y < Main.caveLavaLevel - 1) {
+            if (y < GregCavesConfig.caveLavaLevel - 1) {
                 data[index] = Blocks.flowing_lava;
             } else {
                 data[index] = null;

@@ -1,6 +1,6 @@
 package mods.tesseract.ucm.mixins.early;
 
-import mods.tesseract.ucm.Main;
+import mods.tesseract.ucm.config.GregCavesConfig;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenMinable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,8 +15,8 @@ public class MixinWorldGenMinable {
 
     @Inject(method = "generate(Lnet/minecraft/world/World;Ljava/util/Random;III)Z", at = @At("TAIL"), cancellable = true)
     public boolean generate(World w, Random r, int x, int y, int z, CallbackInfoReturnable<Boolean> cir) {
-        if (Main.reduceOreGen && y < Main.reduceOreGenY && w.provider.dimensionId == 0)
-            cir.setReturnValue(r.nextFloat() < Main.reduceOreGenRate);
+        if (GregCavesConfig.reduceOreGen && y < GregCavesConfig.reduceOreGenY && w.provider.dimensionId == 0)
+            cir.setReturnValue(r.nextFloat() < GregCavesConfig.reduceOreGenRate);
         return false;
     }
 

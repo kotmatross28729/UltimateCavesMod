@@ -3,7 +3,12 @@ package mods.tesseract.ucm.asm;
 import com.gtnewhorizon.gtnhmixins.IEarlyMixinLoader;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 import mods.tesseract.ucm.Main;
+import mods.tesseract.ucm.config.GregCavesConfig;
+import mods.tesseract.ucm.config.MainConfig;
+import mods.tesseract.ucm.config.WorleyCavesConfig;
+import net.minecraft.launchwrapper.Launch;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,8 +25,16 @@ public class UcmEarlyMixins implements IFMLLoadingPlugin, IEarlyMixinLoader {
 
     @Override
     public List<String> getMixins(Set<String> loadedCoreMods) {
+        
+        String configFolder = "config" + File.separator + "ultimatecavesmod" + File.separator;
+        
+        MainConfig.loadMainConfig(new File(Launch.minecraftHome, configFolder + "UCM_MAIN.cfg"));
+        GregCavesConfig.loadGregConfig(new File(Launch.minecraftHome, configFolder + "UCM_GREG.cfg"));
+        WorleyCavesConfig.loadWorleyConfig(new File(Launch.minecraftHome, configFolder + "UCM_WORLEY.cfg"));
+    
         List<String> mixins = new ArrayList<>();
-        if(Main.enableGregCaves) {
+        
+        if(MainConfig.enableGregCaves) {
             mixins.add("MixinBiomeDecorator");
             mixins.add("MixinBiomeGenBase");
             mixins.add("MixinMapGenRavine");

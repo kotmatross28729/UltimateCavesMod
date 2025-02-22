@@ -1,6 +1,6 @@
 package mods.tesseract.ucm.mixins.early;
 
-import mods.tesseract.ucm.Main;
+import mods.tesseract.ucm.config.GregCavesConfig;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
@@ -17,7 +17,7 @@ public class MixinBiomeGenBase {
 
     @Inject(method = "genBiomeTerrain(Lnet/minecraft/world/World;Ljava/util/Random;[Lnet/minecraft/block/Block;[BIID)V", at = @At("TAIL"))
     public final void genBiomeTerrain(World w, Random r, Block[] blocks, byte[] b, int cx, int cz, double d, CallbackInfo ci) {
-         if (Main.smoothBedrock) {
+         if (GregCavesConfig.smoothBedrock) {
             int i1 = cx & 15;
             int j1 = cz & 15;
             int k1 = blocks.length / 256;
