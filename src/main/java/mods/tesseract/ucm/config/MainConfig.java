@@ -19,7 +19,6 @@ public class MainConfig {
 		blackListedDims = config.get("Functions", "blackListedDims", blackListedDims, "Dimension IDs that will use Vanilla cave generation.").getIntList();
 		revertBlacklist = config.getBoolean("revertBlacklist", "Functions", false, "Flips blacklist so it becomes whitelist.");
 		
-		
 		if(config.hasChanged()) {
 			config.save();
 		}

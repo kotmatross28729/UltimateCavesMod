@@ -1,4 +1,4 @@
-package mods.tesseract.ucm.world;
+package mods.tesseract.ucm.world.GREG;
 
 import mods.tesseract.ucm.util.MathHelper;
 import mods.tesseract.ucm.noise.DoublePerlinNoiseSampler;

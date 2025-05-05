@@ -1,23 +1,9 @@
 package mods.tesseract.ucm.fix;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import mods.tesseract.ucm.Main;
-import mods.tesseract.ucm.world.MapGenGregCaves;
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeDecorator;
-import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraft.world.gen.MapGenRavine;
-import net.minecraft.world.gen.feature.WorldGenMinable;
-import net.minecraftforge.event.terraingen.InitMapGenEvent;
-
-import java.util.Random;
-
 public class FixesGC {
 
 	/**
-	 * I’ll leave it if I need to check  mixins migrated version 
+	 * I’ll leave it if I need to check mixins migrated version 
 	*/
 	
 //    @SubscribeEvent

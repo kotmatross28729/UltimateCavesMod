@@ -6,7 +6,7 @@ import java.io.File;
 
 public class WorleyCavesConfig {
 	//WORLEY CAVES
-	public static float noiseCutoffValue = -0.18f;
+	public static float noiseCutoffValue = -0.14f;
 	public static float surfaceCutoffValue = -0.081f;
 	public static float warpAmplifier = 8.0f;
 	public static int easeInDepth = 15;

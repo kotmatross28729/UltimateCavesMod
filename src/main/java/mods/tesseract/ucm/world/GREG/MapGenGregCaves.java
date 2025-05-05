@@ -1,4 +1,4 @@
-package mods.tesseract.ucm.world;
+package mods.tesseract.ucm.world.GREG;
 
 import mods.tesseract.ucm.Utils;
 import mods.tesseract.ucm.config.GregCavesConfig;
@@ -35,11 +35,10 @@ public class MapGenGregCaves extends MapGenCaves {
         //try and grab other modded cave gens, like swiss cheese caves or Quark big caves
         //our replace cavegen event will ignore cave events when the original cave class passed in is a Greg cave
         moddedCaveGen = TerrainGen.getModdedMapGen(this, InitMapGenEvent.EventType.CAVE);
-        if (moddedCaveGen != this)
-            replacementCaves = moddedCaveGen;
-        else
-            replacementCaves = new MapGenCaves(); //default to vanilla caves if there are no other modded cave gens
+        if (moddedCaveGen != this) replacementCaves = moddedCaveGen;
+        else replacementCaves = new MapGenCaves();
     }
+    
     @Override
     public void func_151539_a(IChunkProvider c, World w, int chunkX, int chunkZ, Block[] blocks) {
         int currentDim = w.provider.dimensionId;
