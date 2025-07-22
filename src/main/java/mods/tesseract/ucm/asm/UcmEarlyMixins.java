@@ -2,7 +2,6 @@ package mods.tesseract.ucm.asm;
 
 import com.gtnewhorizon.gtnhmixins.IEarlyMixinLoader;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
-import mods.tesseract.ucm.Main;
 import mods.tesseract.ucm.config.GregCavesConfig;
 import mods.tesseract.ucm.config.MainConfig;
 import mods.tesseract.ucm.config.WorleyCavesConfig;

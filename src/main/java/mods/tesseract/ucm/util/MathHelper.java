@@ -17,10 +17,6 @@ public final class MathHelper {
         return value * value * value * (value * (value * 6.0D - 15.0D) + 10.0D);
     }
 
-    public static double perlinFadeDerivative(double value) {
-        return 30.0D * value * value * (value - 1.0D) * (value - 1.0D);
-    }
-
     public static double lerp(double delta, double start, double end) {
         return start + delta * (end - start);
     }
@@ -37,7 +33,7 @@ public final class MathHelper {
         if (value < min) {
             return min;
         } else {
-            return value > max ? max : value;
+            return Math.min(value, max);
         }
     }
 

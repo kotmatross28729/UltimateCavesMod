@@ -26,25 +26,4 @@ public class ChunkPrimer {
     {
         return x << 12 | z << 8 | y;
     }
-
-    /**
-     * Counting down from the highest block in the sky, find the first non-air block for the given location
-     * (actually, looks like mostly checks x, z+1? And actually checks only the very top sky block of actual x, z)
-     */
-    public int findGroundBlockIdx(int x, int z)
-    {
-        int i = (x << 12 | z << 8) + 256 - 1;
-
-        for (int j = 255; j >= 0; --j)
-        {
-            Block block = this.data[i + j];
-
-            if (block != null && block != DEFAULT_STATE)
-            {
-                return j;
-            }
-        }
-
-        return 0;
-    }
 }

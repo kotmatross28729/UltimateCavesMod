@@ -19,11 +19,7 @@ public class DoublePerlinNoiseSampler {
 
         return new DoublePerlinNoiseSampler(random, offset, list);
     }
-
-    public static DoublePerlinNoiseSampler create(Random random, int offset, List<Double> octaves) {
-        return new DoublePerlinNoiseSampler(random, offset, octaves);
-    }
-
+    
     private DoublePerlinNoiseSampler(Random random, int offset, List<Double> octaves) {
         this.firstSampler = OctavePerlinNoiseSampler.create(random, offset, octaves);
         this.secondSampler = OctavePerlinNoiseSampler.create(random, offset, octaves);

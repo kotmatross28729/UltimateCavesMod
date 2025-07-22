@@ -11,12 +11,7 @@ public class WorleyUtil {
 		m_seed = 1337;
 	}
 	
-	public WorleyUtil(int seed) {
-		m_seed = seed;
-	}
-	
-	public void SetSeed(int seed)
-	{
+	public void SetSeed(int seed) {
 		m_seed = seed;
 	}
 	
@@ -25,8 +20,7 @@ public class WorleyUtil {
 	 * Default: 0.01
 	 * @param frequency
 	 */
-	public void SetFrequency(float frequency)
-	{
+	public void SetFrequency(float frequency) {
 		m_frequency = frequency;
 	}
 	
