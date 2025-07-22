@@ -29,14 +29,11 @@ public class MapGenGregCaves extends MapGenCaves {
     private double[] upperInterpolatedNoises;
     private double[] depthNoises;
     
-    private MapGenBase replacementCaves;
-    private MapGenBase moddedCaveGen;
-    public MapGenGregCaves() {
-        //try and grab other modded cave gens, like swiss cheese caves or Quark big caves
-        //our replace cavegen event will ignore cave events when the original cave class passed in is a Greg cave
-        moddedCaveGen = TerrainGen.getModdedMapGen(this, InitMapGenEvent.EventType.CAVE);
-        if (moddedCaveGen != this) replacementCaves = moddedCaveGen;
-        else replacementCaves = new MapGenCaves();
+    private final MapGenBase replacementCaves;
+	
+	public MapGenGregCaves() {
+        MapGenBase moddedCaveGen = TerrainGen.getModdedMapGen(this, InitMapGenEvent.EventType.CAVE);
+        replacementCaves = (moddedCaveGen != this) ? moddedCaveGen : new MapGenCaves();
     }
     
     @Override

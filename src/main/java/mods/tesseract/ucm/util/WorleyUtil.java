@@ -7,12 +7,15 @@ public class WorleyUtil {
 	
 	private float m_frequency = (float) 0.01;
 	
-	public WorleyUtil()
-	{
+	public WorleyUtil() {
 		m_seed = 1337;
 	}
 	
-	public WorleyUtil(int seed)
+	public WorleyUtil(int seed) {
+		m_seed = seed;
+	}
+	
+	public void SetSeed(int seed)
 	{
 		m_seed = seed;
 	}

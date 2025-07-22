@@ -14,7 +14,6 @@ public class WorleyCavesConfig {
 	public static float horizonalCompressionMultiplier = 1.0f;
 	public static int maxCaveHeight = 128;
 	public static int minCaveHeight = 1;
-	public static String lavaBlock = "minecraft:lava";
 	public static int lavaDepth = 2;
 	public static boolean allowReplaceMoreBlocks = true;
 	
@@ -30,7 +29,6 @@ public class WorleyCavesConfig {
 		horizonalCompressionMultiplier = config.getFloat("horizonalCompressionMultiplier", "WorleyCaves", horizonalCompressionMultiplier, 0, Float.MAX_VALUE, "Streches (when < 1.0) or compresses (when > 1.0) cave generation along X and Z axis");
 		maxCaveHeight = config.getInt("maxCaveHeight", "WorleyCaves", maxCaveHeight, 1, 256, "Caves will not attempt to generate above this y level. Range 1-256");
 		minCaveHeight = config.getInt("minCaveHeight", "WorleyCaves", minCaveHeight, 1, 256, "Caves will not attempt to generate below this y level. Range 1-256");
-		lavaBlock = config.getString("lavaBlock", "WorleyCaves", lavaBlock, "Block to use when generating large lava lakes below lavaDepth (usually y=10)");
 		lavaDepth = config.getInt("lavaDepth", "WorleyCaves", lavaDepth, 1, 256, "Air blocks at or below this y level will generate as lavaBlock");
 		allowReplaceMoreBlocks = config.getBoolean("allowReplaceMoreBlocks", "WorleyCaves", allowReplaceMoreBlocks, "Allow replacing more blocks with caves (useful for mods which completely overwrite world gen)");
 		

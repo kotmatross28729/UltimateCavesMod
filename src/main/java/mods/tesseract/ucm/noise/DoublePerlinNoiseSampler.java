@@ -7,7 +7,6 @@ import java.util.Random;
 
 public class DoublePerlinNoiseSampler {
     private static final double DOMAIN_SCALE = 1.0181268882175227D;
-    private static final double field_31703 = 0.3333333333333333D;
     private final double amplitude;
     private final OctavePerlinNoiseSampler firstSampler;
     private final OctavePerlinNoiseSampler secondSampler;
@@ -49,9 +48,9 @@ public class DoublePerlinNoiseSampler {
     }
 
     public double sample(double x, double y, double z) {
-        double d = x * 1.0181268882175227D;
-        double e = y * 1.0181268882175227D;
-        double f = z * 1.0181268882175227D;
+        double d = x * DOMAIN_SCALE;
+        double e = y * DOMAIN_SCALE;
+        double f = z * DOMAIN_SCALE;
         return (this.firstSampler.sample(x, y, z) + this.secondSampler.sample(d, e, f)) * this.amplitude;
     }
 }

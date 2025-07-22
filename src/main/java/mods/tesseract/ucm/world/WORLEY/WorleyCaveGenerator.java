@@ -23,41 +23,24 @@ import net.minecraftforge.fluids.IFluidBlock;
 import java.util.Random;
 
 public class WorleyCaveGenerator extends MapGenCaves {
-    private MapGenBase surfaceCaves = new MapGenSurfaceCaves();
-    private WorleyUtil worleyF1divF3 = new WorleyUtil();
+    private final MapGenBase surfaceCaves = new MapGenSurfaceCaves();
+    private final WorleyUtil worleyF1divF3 = new WorleyUtil();
     private FastNoise displacementNoisePerlin = new FastNoise();
-    private MapGenBase replacementCaves;
-    private MapGenBase moddedCaveGen;
-    private int maxCaveHeight;
-    private int minCaveHeight;
-    private float noiseCutoff;
-    private float warpAmplifier;
-    private float easeInDepth;
-    private float yCompression;
-    private float xzCompression;
-    private int lavaDepth;
-    private Block lava;
-    private static int HAS_CAVES_FLAG = 129;
+    private final MapGenBase replacementCaves;
+    private final int maxCaveHeight = WorleyCavesConfig.maxCaveHeight,
+            minCaveHeight = WorleyCavesConfig.minCaveHeight;
+    private final float noiseCutoff = WorleyCavesConfig.noiseCutoffValue,
+            warpAmplifier = WorleyCavesConfig.warpAmplifier,
+            easeInDepth = WorleyCavesConfig.easeInDepth,
+            yCompression = WorleyCavesConfig.verticalCompressionMultiplier,
+            xzCompression = WorleyCavesConfig.horizonalCompressionMultiplier;
+    private final int lavaDepth = WorleyCavesConfig.lavaDepth;
+    private static final Block lava = Blocks.lava;
+    private static final int HAS_CAVES_FLAG = 129;
     
     public WorleyCaveGenerator() {
-        maxCaveHeight = WorleyCavesConfig.maxCaveHeight;
-        minCaveHeight = WorleyCavesConfig.minCaveHeight;
-        noiseCutoff = WorleyCavesConfig.noiseCutoffValue;
-        warpAmplifier = WorleyCavesConfig.warpAmplifier;
-        easeInDepth = WorleyCavesConfig.easeInDepth;
-        yCompression = WorleyCavesConfig.verticalCompressionMultiplier;
-        xzCompression = WorleyCavesConfig.horizonalCompressionMultiplier;
-        lavaDepth = WorleyCavesConfig.lavaDepth;
-        
-        lava = (Block) Block.blockRegistry.getObject(WorleyCavesConfig.lavaBlock);
-        if (lava == null) {
-            Main.LOGGER.error("Cannont find block " + WorleyCavesConfig.lavaBlock);
-            lava = Blocks.air;
-        }
-        
-        moddedCaveGen = TerrainGen.getModdedMapGen(this, InitMapGenEvent.EventType.CAVE);
-        if (moddedCaveGen != this) replacementCaves = moddedCaveGen;
-        else replacementCaves = new MapGenCaves();
+        MapGenBase moddedCaveGen = TerrainGen.getModdedMapGen(this, InitMapGenEvent.EventType.CAVE);
+        replacementCaves = (moddedCaveGen != this) ? moddedCaveGen : new MapGenCaves();
     }
     
     @Override
@@ -77,7 +60,8 @@ public class WorleyCaveGenerator extends MapGenCaves {
         
         this.worldObj = worldIn;
         int seed2 = new Random(worldObj.getSeed()).nextInt();
-        worleyF1divF3 = new WorleyUtil(seed2);
+        
+        worleyF1divF3.SetSeed(seed2);
         worleyF1divF3.SetFrequency(0.016f);
         
         displacementNoisePerlin = new FastNoise(seed2);

@@ -11,7 +11,7 @@ import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = "ultimatecavesmod", name = "Ultimate Caves Mod", version = "1.0.4", acceptableRemoteVersions = "*")
+@Mod(modid = "ultimatecavesmod", name = "Ultimate Caves Mod", version = "1.0.5", acceptableRemoteVersions = "*")
 public class Main {
     public static final Logger LOGGER = LogManager.getLogger("ultimatecavesmod");
 
