@@ -213,17 +213,7 @@ public class CompositeCaveGenerator extends MapGenCaves {
                                     depth++;
                                 }
                                 
-                                float adjustedNoiseCutoff = noiseCutoff;// + cutoffAdjuster;
-                                if (depth < easeInDepth) {
-                                    //higher threshold at surface, normal threshold below easeInDepth
-                                    adjustedNoiseCutoff = 1;//(float) clampedLerp(noiseCutoff, surfaceCutoff, (easeInDepth - (float) depth) / easeInDepth);
-                                    
-                                }
-                                
-                                //increase cutoff as we get closer to the minCaveHeight so it's not all flat floors
-                                if (localY < (minCaveHeight + 5)) {
-                                    adjustedNoiseCutoff += (float) (((minCaveHeight + 5) - localY) * 0.05);
-                                }
+                                float adjustedNoiseCutoff = getAdjustedNoiseCutoff(depth, localY);
                                 
                                 if (noiseVal > adjustedNoiseCutoff) {
                                     Block aboveBlock = chunkPrimerIn.getBlockState(localX, localY + 1, localZ);
@@ -267,6 +257,21 @@ public class CompositeCaveGenerator extends MapGenCaves {
                 }
             }
         }
+    }
+    
+    private float getAdjustedNoiseCutoff(int depth, int localY) {
+        float adjustedNoiseCutoff = noiseCutoff;// + cutoffAdjuster;
+        if (depth < easeInDepth) {
+            //higher threshold at surface, normal threshold below easeInDepth
+            adjustedNoiseCutoff = 1;//(float) clampedLerp(noiseCutoff, surfaceCutoff, (easeInDepth - (float) depth) / easeInDepth);
+            
+        }
+        
+        //increase cutoff as we get closer to the minCaveHeight so it's not all flat floors
+        if (localY < (minCaveHeight + 5)) {
+            adjustedNoiseCutoff += (float) (((minCaveHeight + 5) - localY) * 0.05);
+        }
+        return adjustedNoiseCutoff;
     }
     
     public float[][][] sampleNoise(int chunkX, int chunkZ, int maxSurfaceHeight) {
@@ -500,30 +505,7 @@ public class CompositeCaveGenerator extends MapGenCaves {
                 depth /= weight;
                 scale = scale * 0.9F + 0.1F;
                 depth = (depth * 4.0F - 1.0F) / 8.0F;
-                double depthNoise = this.depthNoises[j] / 8000;
-                
-                if (depthNoise < 0.0D) {
-                    depthNoise = -depthNoise * 0.3D;
-                }
-                
-                depthNoise = depthNoise * 3.0D - 2.0D;
-                
-                if (depthNoise < 0.0D) {
-                    depthNoise /= 2.0D;
-                    
-                    if (depthNoise < -1.0D) {
-                        depthNoise = -1.0D;
-                    }
-                    
-                    depthNoise /= 1.4D;
-                    depthNoise /= 2.0D;
-                } else {
-                    if (depthNoise > 1.0D) {
-                        depthNoise = 1.0D;
-                    }
-                    
-                    depthNoise /= 8.0D;
-                }
+                double depthNoise = getDepthNoise(j);
                 
                 ++j;
                 double scaledDepth = depth;
@@ -544,16 +526,7 @@ public class CompositeCaveGenerator extends MapGenCaves {
                         falloff *= 4.0D;
                     }
                     
-                    double lowerNoise = this.lowerInterpolatedNoises[i] / 512.0D;
-                    double upperNoise = this.upperInterpolatedNoises[i] / 512.0D;
-                    double interpolation = (this.interpolationNoises[i] / 10.0D + 1.0D) / 2.0D;
-                    double noise = MathHelper.denormalizeClamp(lowerNoise, upperNoise, interpolation) - falloff;
-                    
-                    // Scale down the last 3 layers
-                    if (y > 29) {
-                        double lerp = (float) (y - 29) / 3.0F;
-                        noise = noise * (1.0D - lerp) + -10.0D * lerp;
-                    }
+                    double noise = getNoise(i, falloff, y);
                     
                     double caveNoise = this.noiseCaves.sample(noise, y * 8, chunkZ * 16 + (z * 4), chunkX * 16 + (x * 4));
                     
@@ -567,29 +540,51 @@ public class CompositeCaveGenerator extends MapGenCaves {
         }
     }
     
-    private boolean isExceptionBiome(BiomeGenBase biome) {
-        return biome == BiomeGenBase.desert || biome == BiomeGenBase.beach || biome == BiomeGenBase.mushroomIsland;
+    private double getDepthNoise(int j) {
+        double depthNoise = this.depthNoises[j] / 8000;
+        
+        if (depthNoise < 0.0D) {
+            depthNoise = -depthNoise * 0.3D;
+        }
+        
+        depthNoise = depthNoise * 3.0D - 2.0D;
+        
+        if (depthNoise < 0.0D) {
+            depthNoise /= 2.0D;
+            
+            if (depthNoise < -1.0D) {
+                depthNoise = -1.0D;
+            }
+            
+            depthNoise /= 1.4D;
+            depthNoise /= 2.0D;
+        } else {
+            if (depthNoise > 1.0D) {
+                depthNoise = 1.0D;
+            }
+            
+            depthNoise /= 8.0D;
+        }
+        return depthNoise;
+    }
+    
+    private double getNoise(int i, double falloff, int y) {
+        double lowerNoise = this.lowerInterpolatedNoises[i] / 512.0D;
+        double upperNoise = this.upperInterpolatedNoises[i] / 512.0D;
+        double interpolation = (this.interpolationNoises[i] / 10.0D + 1.0D) / 2.0D;
+        double noise = MathHelper.denormalizeClamp(lowerNoise, upperNoise, interpolation) - falloff;
+        
+        // Scale down the last 3 layers
+        if (y > 29) {
+            double lerp = (float) (y - 29) / 3.0F;
+            noise = noise * (1.0D - lerp) + -10.0D * lerp;
+        }
+        return noise;
     }
     
     @Override
     protected void digBlock(Block[] data, int index, int x, int y, int z, int chunkX, int chunkZ, boolean foundTop) {
-        BiomeGenBase biome = worldObj.getBiomeGenForCoords(x + chunkX * 16, z + chunkZ * 16);
-        
-        boolean isException = isExceptionBiome(biome);
-        Block top = isException ? Blocks.grass : biome.topBlock;
-        Block filler = isException ? Blocks.dirt : biome.fillerBlock;
-        Block block = data[index];
-        
-        if (block == Blocks.stone || block == filler || block == top) {
-            if (y < GregCavesConfig.caveLavaLevel - 1) {
-                data[index] = Blocks.flowing_lava;
-            } else {
-                data[index] = null;
-                if (foundTop && data[index - 1] == filler) {
-                    data[index - 1] = top;
-                }
-            }
-        }
+        Utils.digBlock(worldObj, data, index, x, y, z, chunkX, chunkZ, foundTop);
     }
     
 }

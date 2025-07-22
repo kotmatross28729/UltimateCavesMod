@@ -48,7 +48,7 @@ public final class NoiseCaveGenerator {
         if (generateLimited) {
             return Math.min(noise, (tunnel + tunnelOffset) * 128.0D * 5.0D);
         } else {
-            double caveDensity = this.caveDensityNoise.sample((double) x, (double) y / 1.5D, (double) z);
+            double caveDensity = this.caveDensityNoise.sample(x, (double) y / 1.5D, z);
 
             double scaledCaveDensity = MathHelper.clamp(caveDensity + 0.25D, -1.0D, 1.0D);
             double yScale = (float)(30 - y) / 8.0F;
@@ -66,8 +66,8 @@ public final class NoiseCaveGenerator {
     }
 
     private double getPillarNoise(int x, int y, int z) {
-        double pillarFalloff = lerpFromProgress(this.pillarFalloffNoise, (double)x, (double)y, (double)z, 0.0D, 2.0D);
-        double pillarScale = lerpFromProgress(this.pillarScaleNoise, (double)x, (double)y, (double)z, 0.0D, 1.1D);
+        double pillarFalloff = lerpFromProgress(this.pillarFalloffNoise, x, y, z, 0.0D, 2.0D);
+        double pillarScale = lerpFromProgress(this.pillarScaleNoise, x, y, z, 0.0D, 1.1D);
 
         pillarScale = Math.pow(pillarScale, 3.0D);
         double pillarNoise = this.pillarNoise.sample((double)x * 25.0D, (double)y * 0.3D, (double)z * 25.0D);
