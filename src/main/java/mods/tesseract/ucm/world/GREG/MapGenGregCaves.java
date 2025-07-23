@@ -126,7 +126,7 @@ public class MapGenGregCaves extends MapGenCaves {
                                         if (blocks[index] == Blocks.stone) {
                                             int y = noiseY * 8 + pieceY;
                                             if (y > 5) {
-                                                if (y < GregCavesConfig.caveLavaLevel) {
+                                                if (y <= MainConfig.caveLavaLevel) {
                                                     blocks[index] = Blocks.flowing_lava;
                                                 } else {
                                                     blocks[index] = null;
@@ -269,25 +269,8 @@ public class MapGenGregCaves extends MapGenCaves {
         }
     }
 
-    private boolean isExceptionBiome(BiomeGenBase biome) {
-        return biome == BiomeGenBase.desert || biome == BiomeGenBase.beach || biome == BiomeGenBase.mushroomIsland;
-    }
-
+    @Override
     protected void digBlock(Block[] data, int index, int x, int y, int z, int chunkX, int chunkZ, boolean foundTop) {
-        BiomeGenBase biome = worldObj.getBiomeGenForCoords(x + chunkX * 16, z + chunkZ * 16);
-        Block top = (isExceptionBiome(biome) ? Blocks.grass : biome.topBlock);
-        Block filler = (isExceptionBiome(biome) ? Blocks.dirt : biome.fillerBlock);
-        Block block = data[index];
-
-        if (block == Blocks.stone || block == filler || block == top) {
-            if (y < GregCavesConfig.caveLavaLevel - 1) {
-                data[index] = Blocks.flowing_lava;
-            } else {
-                data[index] = null;
-                if (foundTop && data[index - 1] == filler) {
-                    data[index - 1] = top;
-                }
-            }
-        }
+        Utils.digBlock(worldObj, data, index, x, y, z, chunkX, chunkZ, foundTop);
     }
 }

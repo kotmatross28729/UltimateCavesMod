@@ -9,6 +9,7 @@ public class MainConfig {
 	public static boolean enableGregCaves;
 	public static int[] blackListedDims = {-1};
 	public static boolean revertBlacklist;
+	public static int caveLavaLevel;
 	
 	public static void loadMainConfig(File configFile) {
 		Configuration config = new Configuration(configFile);
@@ -18,6 +19,8 @@ public class MainConfig {
 		
 		blackListedDims = config.get("Functions", "blackListedDims", blackListedDims, "Dimension IDs that will use Vanilla cave generation.").getIntList();
 		revertBlacklist = config.getBoolean("revertBlacklist", "Functions", false, "Flips blacklist so it becomes whitelist.");
+		
+		caveLavaLevel = config.getInt("caveLavaLevel", "Functions", 2, 0, 255, "Air blocks at or below this y level will generate as lava. GregCaves requires smoothBedrock to be true");
 		
 		if(config.hasChanged()) {
 			config.save();

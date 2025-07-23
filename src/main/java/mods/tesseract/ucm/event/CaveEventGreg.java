@@ -6,6 +6,7 @@ import mods.tesseract.ucm.world.GREG.MapGenGregCaves;
 import net.minecraftforge.event.terraingen.InitMapGenEvent;
 
 public class CaveEventGreg {
+    
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onCaveEvent(InitMapGenEvent event) {
         if (event.type == InitMapGenEvent.EventType.CAVE && !event.originalGen.getClass().equals(MapGenGregCaves.class)) {

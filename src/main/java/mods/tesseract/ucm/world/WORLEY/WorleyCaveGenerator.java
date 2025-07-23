@@ -1,15 +1,12 @@
 package mods.tesseract.ucm.world.WORLEY;
 
 import mods.tesseract.mycelium.world.ChunkPrimer;
-import mods.tesseract.ucm.Main;
 import mods.tesseract.ucm.Utils;
 import mods.tesseract.ucm.config.MainConfig;
 import mods.tesseract.ucm.config.WorleyCavesConfig;
 import mods.tesseract.ucm.util.FastNoise;
 import mods.tesseract.ucm.util.WorleyUtil;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockLiquid;
-import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -18,7 +15,6 @@ import net.minecraft.world.gen.MapGenBase;
 import net.minecraft.world.gen.MapGenCaves;
 import net.minecraftforge.event.terraingen.InitMapGenEvent;
 import net.minecraftforge.event.terraingen.TerrainGen;
-import net.minecraftforge.fluids.IFluidBlock;
 
 import java.util.Random;
 
@@ -34,8 +30,8 @@ public class WorleyCaveGenerator extends MapGenCaves {
             easeInDepth = WorleyCavesConfig.easeInDepth,
             yCompression = WorleyCavesConfig.verticalCompressionMultiplier,
             xzCompression = WorleyCavesConfig.horizonalCompressionMultiplier;
-    private final int lavaDepth = WorleyCavesConfig.lavaDepth;
-    private static final Block lava = Blocks.lava;
+    private final int lavaDepth = MainConfig.caveLavaLevel;
+    private static final Block lava = Blocks.flowing_lava;
     private static final int HAS_CAVES_FLAG = 129;
     
     public WorleyCaveGenerator() {
@@ -152,7 +148,7 @@ public class WorleyCaveGenerator extends MapGenCaves {
                                         currentBiome = worldObj.provider.getBiomeGenForCoords(realPos[0], realPos[2]);//world.getBiome(realPos);
                                         
                                         //use isDigable to skip leaves/wood getting counted as surface
-                                        if (canReplaceBlock(currentBlock, Blocks.air) || currentBlock == currentBiome.topBlock || currentBlock == currentBiome.fillerBlock) {
+                                        if (Utils.canReplaceBlock(currentBlock, Blocks.air) || currentBlock == currentBiome.topBlock || currentBlock == currentBiome.fillerBlock) {
                                             depth++;
                                         }
                                     } else {
@@ -177,20 +173,20 @@ public class WorleyCaveGenerator extends MapGenCaves {
                                 
                                 if (noiseVal > adjustedNoiseCutoff) {
                                     Block aboveBlock = chunkPrimerIn.getBlockState(localX, localY + 1, localZ);
-                                    if (!isFluidBlock(aboveBlock) || localY <= lavaDepth) {
+                                    if (!Utils.isFluidBlock(aboveBlock) || localY <= lavaDepth) {
                                         //if we are in the easeInDepth range or near sea level or subH2O is installed, do some extra checks for water before digging
                                         if ((depth < easeInDepth || localY > (seaLevel - 8)) && localY > lavaDepth) {
                                             if (localX < 15)
-                                                if (isFluidBlock(chunkPrimerIn.getBlockState(localX + 1, localY, localZ)))
+                                                if (Utils.isFluidBlock(chunkPrimerIn.getBlockState(localX + 1, localY, localZ)))
                                                     continue;
                                             if (localX > 0)
-                                                if (isFluidBlock(chunkPrimerIn.getBlockState(localX - 1, localY, localZ)))
+                                                if (Utils.isFluidBlock(chunkPrimerIn.getBlockState(localX - 1, localY, localZ)))
                                                     continue;
                                             if (localZ < 15)
-                                                if (isFluidBlock(chunkPrimerIn.getBlockState(localX, localY, localZ + 1)))
+                                                if (Utils.isFluidBlock(chunkPrimerIn.getBlockState(localX, localY, localZ + 1)))
                                                     continue;
                                             if (localZ > 0)
-                                                if (isFluidBlock(chunkPrimerIn.getBlockState(localX, localY, localZ - 1)))
+                                                if (Utils.isFluidBlock(chunkPrimerIn.getBlockState(localX, localY, localZ - 1)))
                                                     continue;
                                         }
                                         Block currentBlock = chunkPrimerIn.getBlockState(localX, localY, localZ);
@@ -286,7 +282,7 @@ public class WorleyCaveGenerator extends MapGenCaves {
         int top = searchTop;
         if (searchTop > searchBottom) {
             int searchMid = (searchBottom + searchTop) / 2;
-            if (canReplaceBlock(chunkPrimer.getBlockState(localX, searchMid, localZ), null)) {
+            if (Utils.canReplaceBlock(chunkPrimer.getBlockState(localX, searchMid, localZ), null)) {
                 top = recursiveBinarySurfaceSearch(chunkPrimer, localX, localZ, searchTop, searchMid + 1);
             } else {
                 top = recursiveBinarySurfaceSearch(chunkPrimer, localX, localZ, searchMid, searchBottom);
@@ -309,19 +305,10 @@ public class WorleyCaveGenerator extends MapGenCaves {
         return y;
     }
     
-    public boolean canReplaceBlock(Block block, Block blockUp) {
-        if (block == null || (blockUp != null && blockUp.getMaterial() == Material.water)) return false;
-        return (WorleyCavesConfig.allowReplaceMoreBlocks && block.getMaterial() == Material.rock) || block == Blocks.stone || block == Blocks.dirt || block == Blocks.grass || block == Blocks.hardened_clay || block == Blocks.stained_hardened_clay || block == Blocks.sandstone || block == Blocks.mycelium || block == Blocks.snow_layer || block == Blocks.snow || block == Blocks.sand || block == Blocks.gravel;
-    }
-    
-    private boolean isFluidBlock(Block blocky) {
-        return blocky instanceof BlockLiquid || blocky instanceof IFluidBlock;
-    }
-    
     protected void digBlock(ChunkPrimer data, int x, int y, int z, int chunkX, int chunkZ, boolean foundTop, Block block, Block up, BiomeGenBase biome) {
         Block top = biome.topBlock;
         Block filler = biome.fillerBlock;
-        if (!isFluidBlock(up) && (this.canReplaceBlock(block, up) || block == top || block == filler)) {
+        if (!Utils.isFluidBlock(up) && (Utils.canReplaceBlock(block, up) || block == top || block == filler)) {
             if (y <= lavaDepth) {
                 data.setBlockState(x, y, z, lava);
             } else {

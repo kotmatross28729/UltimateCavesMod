@@ -26,7 +26,7 @@ public class DoublePerlinNoiseSampler {
         int i = 2147483647;
         int j = -2147483648;
         ListIterator<Double> doubleListIterator = octaves.listIterator();
-
+        
         while(doubleListIterator.hasNext()) {
             int k = doubleListIterator.nextIndex();
             double d = doubleListIterator.next();

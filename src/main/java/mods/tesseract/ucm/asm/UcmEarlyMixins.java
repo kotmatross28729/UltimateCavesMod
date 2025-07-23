@@ -34,10 +34,14 @@ public class UcmEarlyMixins implements IFMLLoadingPlugin, IEarlyMixinLoader {
         List<String> mixins = new ArrayList<>();
         
         if(MainConfig.enableGregCaves) {
-            mixins.add("MixinBiomeDecorator");
-            mixins.add("MixinBiomeGenBase");
+            
+            if(GregCavesConfig.smoothBedrock)
+                mixins.add("MixinBiomeGenBase");
+            
             mixins.add("MixinMapGenRavine");
-            mixins.add("MixinWorldGenMinable");
+            
+            if(GregCavesConfig.reduceOreGen)
+                mixins.add("MixinWorldGenMinable");
         }
 
         return mixins;

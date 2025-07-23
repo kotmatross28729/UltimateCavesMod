@@ -1,13 +1,14 @@
 package mods.tesseract.ucm;
 
-import mods.tesseract.ucm.config.GregCavesConfig;
 import mods.tesseract.ucm.config.MainConfig;
 import mods.tesseract.ucm.config.WorleyCavesConfig;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraftforge.fluids.IFluidBlock;
 
 public class Utils {
 	public static boolean isDimensionBlacklisted(int dimensionId) {
@@ -19,9 +20,14 @@ public class Utils {
 		return false;
 	}
 	
-	private static boolean isExceptionBiome(BiomeGenBase biome) {
+	public static boolean isExceptionBiome(BiomeGenBase biome) {
 		return biome == BiomeGenBase.desert || biome == BiomeGenBase.beach || biome == BiomeGenBase.mushroomIsland;
 	}
+	
+	public static boolean isFluidBlock(Block block) {
+		return block instanceof BlockLiquid || block instanceof IFluidBlock;
+	}
+	
 	public static void digBlock(World worldObj, Block[] data, int index, int x, int y, int z, int chunkX, int chunkZ, boolean foundTop) {
 		BiomeGenBase biome = worldObj.getBiomeGenForCoords(x + chunkX * 16, z + chunkZ * 16);
 		
@@ -31,7 +37,7 @@ public class Utils {
 		Block block = data[index];
 		
 		if (canReplaceBlock(block, null) || block == filler || block == top) {
-			if (y < GregCavesConfig.caveLavaLevel - 1) {
+			if (y <= MainConfig.caveLavaLevel) {
 				data[index] = Blocks.flowing_lava;
 			} else {
 				data[index] = null;
@@ -52,6 +58,7 @@ public class Utils {
 				|| block == Blocks.hardened_clay
 				|| block == Blocks.stained_hardened_clay
 				|| block == Blocks.snow_layer
+				|| block == Blocks.snow
 				|| block == Blocks.sandstone
 				|| block == Blocks.mycelium
 				|| block == Blocks.sand
